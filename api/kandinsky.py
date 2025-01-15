@@ -1,7 +1,7 @@
 import json
 import time
 
-import requests
+import aiohttp
 
 
 class Text2ImageAPI:
@@ -13,12 +13,14 @@ class Text2ImageAPI:
             'X-Secret': f'Secret {secret_key}',
         }
 
-    def get_model(self):
-        response = requests.get(self.URL + 'key/api/v1/models', headers=self.AUTH_HEADERS)
-        data = response.json()
+    async def get_model(self):
+        async with aiohttp.ClientSession() as session:
+            async with session.get(self.URL + 'key/api/v1/models', headers=self.AUTH_HEADERS) as resp:
+                data = await resp.json()
+
         return data[0]['id']
 
-    def generate(self, prompt, model, images=1, width=1024, height=1024):
+    async def generate(self, prompt, model, images=1, width=1024, height=1024):
         params = {
             "type": "GENERATE",
             "numImages": images,
@@ -33,14 +35,21 @@ class Text2ImageAPI:
             'model_id': (None, model),
             'params': (None, json.dumps(params), 'application/json')
         }
-        response = requests.post(self.URL + 'key/api/v1/text2image/run', headers=self.AUTH_HEADERS, files=data)
-        data = response.json()
-        return data['uuid']
+        async with aiohttp.ClientSession() as session:
+            url = self.URL + 'key/api/v1/text2image/run'
+            async with session.post(url, headers=self.AUTH_HEADERS) as resp:
+                if resp.status == 200:
+                    data = await resp.json()
+                    return data['uuid']
 
-    def check_generation(self, request_id, attempts=10, delay=10):
+    async def check_generation(self, request_id, attempts=10, delay=10):
+        data = ""
         while attempts > 0:
-            response = requests.get(self.URL + 'key/api/v1/text2image/status/' + request_id, headers=self.AUTH_HEADERS)
-            data = response.json()
+            async with aiohttp.ClientSession() as session:
+                url = self.URL + 'key/api/v1/text2image/status/' + request_id
+                async with session.get(url, headers=self.AUTH_HEADERS) as resp:
+                    if resp.status == 200:
+                        data = resp.json()
             if data['status'] == 'DONE':
                 return data['images']
 
