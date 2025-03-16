@@ -242,5 +242,5 @@ cython_debug/
 .idea/
 
 .env
-
+images/
 database.db

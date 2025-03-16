@@ -1,5 +1,21 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup
 
-keyboard1 = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text='Генерация'), KeyboardButton(text='Детекция')]
-])
+keyboard_main = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Генерация ✏️"),
+            KeyboardButton(text="Детекция 🤖"),
+        ],
+        [KeyboardButton(text="Помощь проекту 🗃️")],
+    ]
+)
+
+keyboard_image = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="Реальное 📸", callback_data="real")],
+        [InlineKeyboardButton(text="Аи 🤖", callback_data="ai")],
+    ]
+)
