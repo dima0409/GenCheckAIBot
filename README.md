@@ -30,7 +30,7 @@ python3 -m venv venv
 ```
 Активация на windows:
 ```bash
-.\venv\Scripts\activate.bat
+.\venv\Scripts\activate
 ```
 Активация на linux:
 ```bash
