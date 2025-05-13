@@ -9,12 +9,24 @@ queue = asyncio.Queue()
 ml_model = model.ModelInf()
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
 
 async def worker(bot: Bot):
+    """Асинхронный воркер для обработки изображения с очереди.
+
+    Получает задачи из очереди и выполняет:
+    1. Загрузка файла через Telegram API.
+    2. Классификация изображения через МЛ.
+    3. Отправка результата пользователю.
+    4. Очистка состояния.
+
+    Args:
+        bot (Bot): Экземпляр бота aiogram для работы с API.
+    """
     while True:
         file_id, message, state = await queue.get()
         try:
@@ -32,9 +44,14 @@ async def worker(bot: Bot):
         finally:
             queue.task_done()
             logger.info(
-                f"Файл {file_id} обработан. Размер очереди: {queue.qsize()}"
+                f"Файл {file_id} обработан. Размер очереди: {queue.qsize()}",
             )
 
 
 async def start_worker(bot: Bot):
+    """Запуск фонового воркера для обработки изображений.
+
+    Args:
+        bot (Bot): Экземпляр бота aiogram для работы с API.
+    """
     asyncio.create_task(worker(bot))
