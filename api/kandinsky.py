@@ -44,7 +44,7 @@ class Text2ImageAPI:
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 self.URL + "key/api/v1/models",
-                headersй=self.AUTH_HEADERS,
+                headers=self.AUTH_HEADERS,
             ) as response:
                 response.raise_for_status()
                 data = await response.json()
